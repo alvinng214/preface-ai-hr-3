@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Preface HR Assistant</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<!-- n8n chat base styles from CDN -->
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css"
+		/>
+
+		<style>
+			/* =========
+			   Full-page layout
+			   ========= */
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100%;
+			}
+
+			body {
+				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+					sans-serif;
+				background: #020617;
+			}
+
+			#root,
+			#n8n-chat {
+				width: 100%;
+				height: 100%;
+			}
+
+			/* Container used by the widget in fullscreen mode */
+			.hr-chat-fullscreen {
+				width: 100vw;
+				height: 100vh;
+				max-width: 100%;
+				max-height: 100%;
+				background: radial-gradient(circle at top left, #0f766e 0, #020617 55%, #020617 100%);
+			}
+
+			/* =========
+			   n8n chat theming via CSS variables
+			   (names follow @n8n/chat's CSS variable contract)
+			   ========= */
+			:root {
+				/* Brand colors for Preface HR Assistant */
+				--chat--color-primary: #0f766e;
+				--chat--color-primary-shade-50: #115e59;
+				--chat--color-primary-shade-100: #0b4f49;
+
+				--chat--color-secondary: #1d4ed8;
+				--chat--color-secondary-shade-50: #1e40af;
+
+				--chat--color-white: #ffffff;
+				--chat--color-light: #f9fafb;
+				--chat--color-light-shade-50: #e5e7eb;
+				--chat--color-light-shade-100: #d1d5db;
+				--chat--color-medium: #9ca3af;
+				--chat--color-dark: #020617;
+				--chat--color-disabled: #6b7280;
+				--chat--color-typing: #4b5563;
+
+				--chat--spacing: 1rem;
+				--chat--border-radius: 0.75rem;
+				--chat--transition-duration: 0.15s;
+
+				/* Window size (for window mode; ignored in fullscreen) */
+				--chat--window--width: 420px;
+				--chat--window--height: 640px;
+
+				/* Messages */
+				--chat--message--bot--background: var(--chat--color-white);
+				--chat--message--bot--color: var(--chat--color-dark);
+				--chat--message--user--background: var(--chat--color-primary);
+				--chat--message--user--color: var(--chat--color-white);
+				--chat--message--pre--background: rgba(15, 23, 42, 0.04);
+
+				/* Toggle button (mainly for window mode) */
+				--chat--toggle--background: var(--chat--color-primary);
+				--chat--toggle--hover--background: var(--chat--color-primary-shade-50);
+				--chat--toggle--active--background: var(
+					--chat--color-primary-shade-100
+				);
+				--chat--toggle--color: var(--chat--color-white);
+				--chat--toggle--size: 64px;
+
+				/* Input / textarea */
+				--chat--textarea--height: 56px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- This is where @n8n/chat will mount -->
+		<div id="n8n-chat" class="hr-chat-fullscreen"></div>
+
+		<script type="module">
+			import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+			// TODO: replace this with your real Chat Trigger webhook URL
+			const N8N_WEBHOOK_URL =
+				'https://unhunted-radiantly-olin.ngrok-free.dev/webhook/07966e50-1c71-4dc1-88e7-8b809229bfc6/chat';
+
+			createChat({
+				/* =========
+				   Core connection config
+				   ========= */
+				webhookUrl: N8N_WEBHOOK_URL,
+				webhookConfig: {
+					method: 'POST',
+					headers: {
+						// Example placeholder if you want auth
+						// Authorization: 'Bearer YOUR_TOKEN',
+					},
+				},
+
+				/* =========
+				   Mount target & layout
+				   ========= */
+				target: '#n8n-chat', // must match the div id
+				mode: 'fullscreen', // 'window' | 'fullscreen'
+
+				/* =========
+				   Conversation payload keys (match your n8n workflow)
+				   ========= */
+				chatInputKey: 'chatInput', // used by AI node
+				chatSessionKey: 'sessionId', // used by memory node
+
+				/* =========
+				   Session handling & behavior
+				   ========= */
+				loadPreviousSession: true, // reuse existing session if available
+				showWelcomeScreen: true, // show initial welcome view
+				autoStartConversation: true, // start immediately on load
+
+				/* =========
+				   File uploads
+				   ========= */
+				allowFileUploads: false, // set true if you want staff to upload docs
+				allowedFilesMimeTypes: 'image/*,application/pdf',
+
+				/* =========
+				   Metadata (sent to n8n with every request)
+				   ========= */
+				metadata: {
+					app: 'preface-hr-assistant',
+					source: 'employee-portal',
+					// Example placeholders for you to populate at runtime:
+					// employeeId: 'EMPLOYEE_ID',
+					// department: 'Engineering',
+					// locale: 'en-HK',
+				},
+
+				/* =========
+				   Language & copy
+				   ========= */
+				defaultLanguage: 'en',
+				initialMessages: [
+					'Hi, I’m the Preface HR Assistant.',
+					'Ask me about HR policies, leave, benefits, claims, or onboarding.',
+				],
+				i18n: {
+					en: {
+						title: 'Preface HR Assistant',
+						subtitle:
+							'Ask anything about Preface HR policy, leave, and benefits.',
+						footer:
+							'Answers are AI-generated based on Preface HR policies. For formal advice, please contact HR directly.',
+						getStarted: 'Start a new HR conversation',
+						inputPlaceholder:
+							'Type an HR question (e.g. “How many annual leave days do I have?”)…',
+					},
+					// Example: add more locales later if needed
+					// zh: {
+					//   title: 'Preface 人力資源助理',
+					//   subtitle: '有關人力資源政策、假期及福利的問題，歡迎提問。',
+					//   footer: '回覆由 AI 根據 Preface HR 政策產生，如需正式意見請聯絡 HR。',
+					//   getStarted: '開始新的對話',
+					//   inputPlaceholder: '輸入你的 HR 問題…',
+					// },
+				},
+			});
+		</script>
+	</body>
+</html>
